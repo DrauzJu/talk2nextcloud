@@ -27,7 +27,8 @@ async function sendPrompt() {
             },
         );
 
-        this.response = await response.text();
+        const jsonResponse = await response.json();
+        this.response = jsonResponse.response ?? 'No response received';
     } finally {
         loading.value = false;
     }
