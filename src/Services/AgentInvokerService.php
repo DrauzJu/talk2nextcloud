@@ -14,7 +14,10 @@ class AgentInvokerService
 
     public function invokeAgent(string $userMessage): string
     {
-        $messages = new MessageBag(Message::ofUser($userMessage));
+        $messages = new MessageBag(
+            Message::forSystem('You are a helpful assistant dealing with Nextcloud notes. Do not act in conversation mode. Always respond in a single message. Do not ask questions.'),
+            Message::ofUser($userMessage)
+        );
         $result = $this->agentProviderService->getAgent()->call($messages);
         $resultContent = $result->getContent();
 
