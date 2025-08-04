@@ -1,12 +1,12 @@
 <template>
   <div>
     <h1>Hello from Vue!</h1>
-    <HelloWorld msg="Welcome to your Vue 3 + TypeScript + Symfony App" />
+    <MainPage/>
   </div>
 </template>
 
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue';
+import MainPage from "./components/MainPage.vue";
 </script>
 
 <style>
