@@ -8,6 +8,12 @@ framework:
     #esi: true
     #fragments: true
 
+    http_client:
+        scoped_clients:
+            nextcloud.client:
+                base_uri: '%env(NEXTCLOUD_URL)%'
+                auth_basic: '%env(NEXTCLOUD_USER)%:%env(NEXTCLOUD_PASSWORD)%'
+
 when@test:
     framework:
         test: true
