@@ -15,7 +15,7 @@ async function sendPrompt() {
     this.response = '';
 
     try {
-        const prompt = "Gibt es eine Notiz zum Thema Essen?";
+        const prompt: string = ''; // ToDo
         const response = await fetch(
             '/api/llm',
             {
