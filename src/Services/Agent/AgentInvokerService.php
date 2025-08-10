@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace Talk2Nextcloud\Services\Agent;
 
 use Symfony\AI\Platform\Message\Content\Audio;
 use Symfony\AI\Platform\Message\Message;
@@ -26,12 +26,16 @@ class AgentInvokerService
         return $this->invokeAgent($messages);
     }
 
-    public function invokeAgentWithUserAudioMessage(string $audioFile): string
+    public function invokeAgentWithUserAudioMessage(string $audioFile, ?string $additionalTextMessage = null): string
     {
         $messages = new MessageBag(
             Message::forSystem(self::SYSTEM_MESSAGE),
             Message::ofUser(Audio::fromFile($audioFile)),
         );
+
+        if ($additionalTextMessage !== null) {
+            $messages->add(Message::ofUser($additionalTextMessage));
+        }
 
         return $this->invokeAgent($messages);
     }

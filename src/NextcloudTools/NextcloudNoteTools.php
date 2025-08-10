@@ -1,6 +1,6 @@
 <?php
 
-namespace App\NextcloudTools;
+namespace Talk2Nextcloud\NextcloudTools;
 
 use Symfony\AI\Agent\Toolbox\Attribute\AsTool;
 use Symfony\Component\DependencyInjection\Attribute\AutoconfigureTag;

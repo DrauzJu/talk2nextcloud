@@ -12,11 +12,13 @@
         "doctrine/doctrine-migrations-bundle": "^3.4",
         "doctrine/orm": "^3.5",
         "pentatrion/vite-bundle": "^8.2",
+        "php-ffmpeg/php-ffmpeg": "^1.3",
         "phpdocumentor/reflection-docblock": "^5.6",
         "symfony/ai-agent": "dev-main",
         "symfony/ai-platform": "dev-main",
         "symfony/console": "7.3.*",
         "symfony/dotenv": "7.3.*",
+        "symfony/filesystem": "7.3.*",
         "symfony/flex": "^2",
         "symfony/form": "7.3.*",
         "symfony/framework-bundle": "7.3.*",
@@ -45,12 +47,12 @@
     },
     "autoload": {
         "psr-4": {
-            "App\\": "src/"
+            "Talk2Nextcloud\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "Talk2Nextcloud\\Tests\\": "tests/"
         }
     },
     "replace": {
