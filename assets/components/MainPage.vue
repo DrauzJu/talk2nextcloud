@@ -10,6 +10,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { ApiClient } from "../services/api-client";
 
 const loading = ref(false);
 const llmResponse = ref('');
@@ -91,7 +92,7 @@ async function sendRecording(blob: Blob|null) {
     const formData = new FormData();
     formData.append('audio', blob, 'recording.webm');
 
-    const response = await fetch('/api/llm/audio-prompt', {
+    const response = await ApiClient.fetch('/api/llm/audio-prompt', {
         method: 'POST',
         body: formData,
     });
