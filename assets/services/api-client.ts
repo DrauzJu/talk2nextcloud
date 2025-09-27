@@ -1,22 +1,26 @@
+import { getJwtTokenExpirationDate } from "../helper/jwt";
+
 export class ApiClient {
-    // Todo:
-    // 1. Check token lifetime and refresh if expired
-    // 2. Handle login failures gracefully
-    // 3. Add error handling for fetch requests
-    // 4. Implement retry logic for failed requests
     public static async fetch(path: string, options?: RequestInit): Promise<Response> {
         let token = localStorage.getItem('authToken');
-        if (token === null) {
-            const loginResponse = await fetch('/api/login', {
-                method: 'POST',
-            });
-            const newToken = (await loginResponse.json()).token;
-            if (!newToken) {
-                throw new Error('Login failed');
-            }
+        let fetchNewToken = false;
 
-            localStorage.setItem('authToken', newToken);
-            token = newToken;
+        if (token === null) {
+            fetchNewToken = true;
+        } else {
+            let tokenExpiration = getJwtTokenExpirationDate(token);
+
+            // Refresh if the token is expired or about to expire in the next 3 minutes
+            let tokenCutoff = new Date();
+            tokenCutoff.setMinutes(tokenCutoff.getMinutes() + 3);
+
+            if (tokenExpiration === null || tokenExpiration <= tokenCutoff) {
+                fetchNewToken = true;
+            }
+        }
+
+        if (fetchNewToken) {
+            token = await ApiClient.getAndSaveNewToken();
         }
 
         return fetch(path, {
@@ -26,5 +30,16 @@ export class ApiClient {
                 Authorization: `Bearer ${token}`,
             },
         });
+    }
+
+    private static async getAndSaveNewToken(): Promise<string | null> {
+        const loginResponse = await fetch('/api/login', {
+            method: 'POST',
+        });
+
+        const data = await loginResponse.json();
+        localStorage.setItem('authToken', data.token);
+
+        return data.token;
     }
 }

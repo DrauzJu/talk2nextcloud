@@ -1,5 +1,5 @@
 <template>
-    <MainPage/>
+    <MainPage class="ma-4"/>
 </template>
 
 <script setup lang="ts">

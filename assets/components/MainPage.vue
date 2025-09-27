@@ -1,8 +1,33 @@
 <template>
     <div>
-        <button @click="startRecording" :disabled="recordingSession !== null">Record</button>
-        <button @click="stopRecording" :disabled="recordingSession === null">Stop and send</button>
-        <button @click="resendLastRecording" :disabled="lastAudioBlob === null">Re-send last</button>
+        <h1>Talk2Nextcloud</h1>
+        <v-card>
+            <v-tabs
+                :items="[{ id: 'voice', text: 'Voice' }, { id: 'text', text: 'Text' }]"
+                align-tabs="center"
+                color="blue"
+            >
+                <template v-slot:tab="{ item }">
+                    <v-tab
+                        :text="item.text"
+                        :value="item.id"
+                    ></v-tab>
+                </template>
+
+                <template v-slot:item="{ item }">
+                    <v-tabs-window-item v-if="item.id === 'voice'" :value="item.id" class="pa-4">
+                        <v-btn class="mr-3" @click="startRecording" :disabled="recordingSession !== null">Record</v-btn>
+                        <v-btn class="mr-3" @click="stopRecording" :disabled="recordingSession === null">Stop and send</v-btn>
+                        <v-btn @click="resendLastRecording" :disabled="lastAudioBlob === null">Re-send last</v-btn>
+                    </v-tabs-window-item>
+
+                    <v-tabs-window-item v-if="item.id === 'text'" :value="item.id" class="pa-4">
+                        <div>Text input</div>
+                    </v-tabs-window-item>
+                </template>
+            </v-tabs>
+        </v-card>
+
         <div v-if="loading">Loading...</div>
         <div v-else>{{ llmResponse }}</div>
     </div>
@@ -26,7 +51,7 @@ const AUDIO_MIME_TYPE = 'audio/webm';
 async function startRecording() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const mediaRecorder = new MediaRecorder(stream, { mimeType: AUDIO_MIME_TYPE });
-    let { promise, resolve } = Promise.withResolvers();
+    let { promise, resolve } = Promise.withResolvers<Blob>();
 
     recordingSession.value = {
         mediaRecorder,
@@ -61,6 +86,10 @@ async function stopRecording() {
         lastAudioBlob.value = audioBlob;
         await sendRecording(audioBlob);
     } catch (error) {
+        if (!(error instanceof Error)) {
+            throw error;
+        }
+
         llmResponse.value = `Error: ${error.message}`;
     } finally {
         loading.value = false;
@@ -78,6 +107,10 @@ async function resendLastRecording() {
     try {
         await sendRecording(lastAudioBlob.value);
     } catch (error) {
+        if (!(error instanceof Error)) {
+            throw error;
+        }
+
         llmResponse.value = `Error: ${error.message}`;
     } finally {
         loading.value = false;
