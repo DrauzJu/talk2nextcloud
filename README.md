@@ -20,6 +20,7 @@ Add a .env.local file:
 ````dotenv
 APP_ENV=prod
 APP_SECRET=tbd
+JWT_PASSPHRASE=tbd
 
 NEXTCLOUD_URL=https://tbd.com
 NEXTCLOUD_USER=tbd
