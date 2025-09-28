@@ -26,7 +26,8 @@ final class LlmController extends AbstractController
     #[Route('/api/llm/text-prompt', methods: ['POST'])]
     public function textPrompt(Request $request): Response
     {
-        $userMessage = $request->request->get('prompt');
+        $data = json_decode($request->getContent(), true, flags: JSON_THROW_ON_ERROR);
+        $userMessage = $data['prompt'] ?? null;
 
         if ($userMessage === null) {
             throw new InvalidArgumentException('Prompt is required');

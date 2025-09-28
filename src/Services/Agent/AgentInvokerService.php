@@ -8,8 +8,9 @@ use Symfony\AI\Platform\Message\MessageBag;
 
 class AgentInvokerService
 {
-    private const SYSTEM_MESSAGE = 'You are a helpful assistant dealing with Nextcloud notes. '
-        . 'Do not act in conversation mode. Always respond in a single message. Do not ask questions.';
+    private const SYSTEM_MESSAGE =
+        'You are a helpful AI assistant. You can answer general knowledge questions. You also have tools to interact with Nextcloud notes. '
+        . ' Do not act in conversation mode. Always respond in a single message. Do not ask questions.';
 
     public function __construct(
         private readonly AgentProviderService $agentProviderService,
