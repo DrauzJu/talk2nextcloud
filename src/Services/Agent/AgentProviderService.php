@@ -25,13 +25,12 @@ class AgentProviderService
     public function getAgent(): Agent
     {
         $platform = PlatformFactory::create($this->geminiApiKey, HttpClient::create());
-        $model = new Gemini('gemini-2.5-flash');
         $toolbox = new Toolbox($this->agentTools, logger: $this->logger);
         $agentProcessor = new AgentProcessor($toolbox);
 
         return new Agent(
             platform: $platform,
-            model: $model,
+            model: 'gemini-2.5-flash',
             inputProcessors: [$agentProcessor],
             outputProcessors: [$agentProcessor],
             logger: $this->logger,

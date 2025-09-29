@@ -10,7 +10,10 @@ class AgentInvokerService
 {
     private const SYSTEM_MESSAGE =
         'You are a helpful AI assistant. You can answer general knowledge questions. You also have tools to interact with Nextcloud notes. '
-        . ' Do not act in conversation mode. Always respond in a single message. Do not ask questions.';
+        . ' Do not act in conversation mode. Always respond in a single message. Do not ask questions. ';
+
+    private const ADDITIONAL_SYSTEM_MESSAGE_AUDIO_INPUT =
+        'Always give a brief summary of what the user requested you to do. ';
 
     public function __construct(
         private readonly AgentProviderService $agentProviderService,
@@ -30,7 +33,7 @@ class AgentInvokerService
     public function invokeAgentWithUserAudioMessage(string $audioFile, ?string $additionalTextMessage = null): string
     {
         $messages = new MessageBag(
-            Message::forSystem(self::SYSTEM_MESSAGE),
+            Message::forSystem(self::SYSTEM_MESSAGE . self::ADDITIONAL_SYSTEM_MESSAGE_AUDIO_INPUT),
             Message::ofUser(Audio::fromFile($audioFile)),
         );
 
