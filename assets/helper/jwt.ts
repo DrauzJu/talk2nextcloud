@@ -6,10 +6,10 @@ export function getJwtTokenExpirationDate(token: string): Date | null {
 
     try {
         const payload = JSON.parse(atob(parts[1]));
-        if (payload.exp && !isNaN(payload.exp)) {
+        if (payload.exp && !Number.isNaN(payload.exp)) {
             return new Date(payload.exp * 1000);
         }
-    } catch (e) {
+    } catch (_e) {
         return null;
     }
 

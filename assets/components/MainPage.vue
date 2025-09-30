@@ -83,7 +83,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
-import { ApiClient } from "../services/api-client";
+import { ApiClient } from '../services/api-client';
 
 type RequestStatus = 'success' | 'error' | '';
 
@@ -116,9 +116,13 @@ async function toggleRecording() {
 
 async function startRecording() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const mediaRecorder = new MediaRecorder(stream, { mimeType: AUDIO_MIME_TYPE });
-        let { promise, resolve } = Promise.withResolvers<Blob>();
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true,
+        });
+        const mediaRecorder = new MediaRecorder(stream, {
+            mimeType: AUDIO_MIME_TYPE,
+        });
+        const { promise, resolve } = Promise.withResolvers<Blob>();
 
         recordingSession.value = {
             mediaRecorder,
@@ -140,7 +144,8 @@ async function startRecording() {
     } catch (error) {
         console.error('Error starting recording:', error);
 
-        llmResponse.value = 'Error: Could not start recording. Please check microphone permissions.';
+        llmResponse.value =
+            'Error: Could not start recording. Please check microphone permissions.';
         requestStatusClass.value = 'error';
         recordingSession.value = null;
     }
@@ -200,12 +205,14 @@ async function resendLastRecording() {
     }
 }
 
+const apiClient = new ApiClient();
+
 async function sendRecording(blob: Blob) {
     const formData = new FormData();
     formData.append('audio', blob, 'recording.webm');
 
     try {
-        const response = await ApiClient.fetch('/api/llm/audio-prompt', {
+        const response = await apiClient.fetch('/api/llm/audio-prompt', {
             method: 'POST',
             body: formData,
         });
@@ -230,7 +237,7 @@ async function sendTextPrompt() {
     requestStatusClass.value = '';
 
     try {
-        const response = await ApiClient.fetch('/api/llm/text-prompt', {
+        const response = await apiClient.fetch('/api/llm/text-prompt', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

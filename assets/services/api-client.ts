@@ -1,17 +1,17 @@
-import { getJwtTokenExpirationDate } from "../helper/jwt";
+import { getJwtTokenExpirationDate } from '../helper/jwt';
 
 export class ApiClient {
-    public static async fetch(path: string, options?: RequestInit): Promise<Response> {
+    public async fetch(path: string, options?: RequestInit): Promise<Response> {
         let token = localStorage.getItem('authToken');
         let fetchNewToken = false;
 
         if (token === null) {
             fetchNewToken = true;
         } else {
-            let tokenExpiration = getJwtTokenExpirationDate(token);
+            const tokenExpiration = getJwtTokenExpirationDate(token);
 
             // Refresh if the token is expired or about to expire in the next 3 minutes
-            let tokenCutoff = new Date();
+            const tokenCutoff = new Date();
             tokenCutoff.setMinutes(tokenCutoff.getMinutes() + 3);
 
             if (tokenExpiration === null || tokenExpiration <= tokenCutoff) {
@@ -20,7 +20,7 @@ export class ApiClient {
         }
 
         if (fetchNewToken) {
-            token = await ApiClient.getAndSaveNewToken();
+            token = await this.getAndSaveNewToken();
         }
 
         return fetch(path, {
@@ -32,7 +32,7 @@ export class ApiClient {
         });
     }
 
-    private static async getAndSaveNewToken(): Promise<string | null> {
+    private async getAndSaveNewToken(): Promise<string | null> {
         const loginResponse = await fetch('/api/login', {
             method: 'POST',
         });
