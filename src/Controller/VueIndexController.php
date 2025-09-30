@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace Talk2Nextcloud\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;

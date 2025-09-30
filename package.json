@@ -6,13 +6,17 @@
         "build": "vite build"
     },
     "dependencies": {
-        "vue": "^3.5.18"
+        "pinia": "^3.0.3",
+        "vite-plugin-vuetify": "^2.1.2",
+        "vue": "^3.5.18",
+        "vuetify": "^3.10.3"
     },
     "devDependencies": {
+        "@mdi/font": "^7.4.47",
         "@vitejs/plugin-vue": "^6.0.1",
         "@vue/tsconfig": "^0.7.0",
         "typescript": "^5.9.2",
-        "vite": "^7.0.6",
+        "vite": "7.1.5",
         "vite-plugin-symfony": "^8.2.0",
         "vue-tsc": "^3.0.5"
     }
