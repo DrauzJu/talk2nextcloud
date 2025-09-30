@@ -1,7 +1,7 @@
 # talk2nextcloud
 
 Symfony web application to interact with Nextcloud using audio input, which is processed by Gemini LLM using 
-custom Nextcloud MCP tools.
+custom Nextcloud tools.
 
 ## Installation
 
