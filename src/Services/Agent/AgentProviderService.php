@@ -30,7 +30,7 @@ class AgentProviderService
 
         return new Agent(
             platform: $platform,
-            model: 'gemini-2.5-flash',
+            model: 'gemini-2.5-pro',
             inputProcessors: [$agentProcessor],
             outputProcessors: [$agentProcessor],
             logger: $this->logger,
