@@ -10,7 +10,7 @@ apt install ffmpeg # or any other way to install ffmpeg and ffprobe - used to co
 
 composer install
 
-npm install && npm build
+npm clean-install && npm run build
 ````
 
 ## Configuration
@@ -36,3 +36,12 @@ Generate JWT tokens using `bin/console lexik:jwt:generate-keypair`.
 - Nextcloud Notes
   - `nextcloud-list-notes`
   - `nextcloud-read-note` (requires note ID)
+
+## Build docker image
+
+````shell
+docker build -f ./docker/Dockerfile .
+```
+
+To run it, you need to mount a volume for the jwt keys (or set JWT_SECRET_KEY and JWT_PUBLIC_KEY)
+and set the environment variables mentioned above.
