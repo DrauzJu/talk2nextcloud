@@ -10,7 +10,7 @@ apt install ffmpeg # or any other way to install ffmpeg and ffprobe - used to co
 
 composer install
 
-yarn install && yarn build
+npm install && npm build
 ````
 
 ## Configuration
