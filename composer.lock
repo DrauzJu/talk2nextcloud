@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "7f119c2d3a09b3aa33ec306487eb9523",
+    "content-hash": "df337b6ef3c86927afde7b91b61cac3e",
     "packages": [
         {
             "name": "doctrine/collections",
@@ -2207,6 +2207,58 @@
             "time": "2024-09-11T13:17:53+00:00"
         },
         {
+            "name": "runtime/frankenphp-symfony",
+            "version": "0.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/php-runtime/frankenphp-symfony.git",
+                "reference": "56822c3631d9522a3136a4c33082d006bdfe4bad"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/php-runtime/frankenphp-symfony/zipball/56822c3631d9522a3136a4c33082d006bdfe4bad",
+                "reference": "56822c3631d9522a3136a4c33082d006bdfe4bad",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1",
+                "symfony/dependency-injection": "^5.4 || ^6.0 || ^7.0",
+                "symfony/http-kernel": "^5.4 || ^6.0 || ^7.0",
+                "symfony/runtime": "^5.4 || ^6.0 || ^7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^9.5"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Runtime\\FrankenPhpSymfony\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kévin Dunglas",
+                    "email": "kevin@dunglas.dev"
+                }
+            ],
+            "description": "FrankenPHP runtime for Symfony",
+            "support": {
+                "issues": "https://github.com/php-runtime/frankenphp-symfony/issues",
+                "source": "https://github.com/php-runtime/frankenphp-symfony/tree/0.2.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/nyholm",
+                    "type": "github"
+                }
+            ],
+            "time": "2023-12-12T12:06:11+00:00"
+        },
+        {
             "name": "spatie/temporary-directory",
             "version": "2.3.0",
             "source": {
@@ -2273,12 +2325,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-agent.git",
-                "reference": "23e1eb8fbfa58e924fd698101843543f8bfd9a5c"
+                "reference": "12ab829717c5ab73511a75474b4f9c9ed36c7b2a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-agent/zipball/23e1eb8fbfa58e924fd698101843543f8bfd9a5c",
-                "reference": "23e1eb8fbfa58e924fd698101843543f8bfd9a5c",
+                "url": "https://api.github.com/repos/symfony/ai-agent/zipball/12ab829717c5ab73511a75474b4f9c9ed36c7b2a",
+                "reference": "12ab829717c5ab73511a75474b4f9c9ed36c7b2a",
                 "shasum": ""
             },
             "require": {
@@ -2363,7 +2415,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-28T20:58:03+00:00"
+            "time": "2025-10-02T13:32:46+00:00"
         },
         {
             "name": "symfony/ai-platform",
@@ -2371,12 +2423,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/ai-platform.git",
-                "reference": "a71e0cd65e94b9a46e8fe1bb6d850f51edb651e3"
+                "reference": "dfbf6d4b07ed22fdebe66ef61802d81771041f97"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ai-platform/zipball/a71e0cd65e94b9a46e8fe1bb6d850f51edb651e3",
-                "reference": "a71e0cd65e94b9a46e8fe1bb6d850f51edb651e3",
+                "url": "https://api.github.com/repos/symfony/ai-platform/zipball/dfbf6d4b07ed22fdebe66ef61802d81771041f97",
+                "reference": "dfbf6d4b07ed22fdebe66ef61802d81771041f97",
                 "shasum": ""
             },
             "require": {
@@ -2486,7 +2538,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-30T09:32:55+00:00"
+            "time": "2025-10-02T13:32:46+00:00"
         },
         {
             "name": "symfony/asset",
