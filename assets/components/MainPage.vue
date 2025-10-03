@@ -266,6 +266,7 @@ async function sendTextPrompt() {
 .llmResponseIFrame {
     width: 100%;
     border: none;
+    height: 400px;
 }
 
 .success {
