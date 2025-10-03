@@ -22,7 +22,7 @@ class AgentProviderService
         private readonly LoggerInterface $logger,
     ) {}
 
-    public function getAgent(): Agent
+    public function getAgent(string $geminiModel): Agent
     {
         $platform = PlatformFactory::create($this->geminiApiKey, HttpClient::create());
         $toolbox = new Toolbox($this->agentTools, logger: $this->logger);
@@ -30,7 +30,7 @@ class AgentProviderService
 
         return new Agent(
             platform: $platform,
-            model: 'gemini-2.5-pro',
+            model: $geminiModel,
             inputProcessors: [$agentProcessor],
             outputProcessors: [$agentProcessor],
             logger: $this->logger,

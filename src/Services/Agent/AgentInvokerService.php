@@ -29,17 +29,24 @@ class AgentInvokerService
     )
     {}
 
-    public function invokeAgentWithUserTextMessage(string $userMessage): string
+    public function invokeAgentWithUserTextMessage(
+        string $userMessage,
+        string $geminiModel,
+    ): string
     {
         $messages = new MessageBag(
             Message::forSystem(self::SYSTEM_MESSAGE),
             Message::ofUser($userMessage)
         );
 
-        return $this->invokeAgent($messages);
+        return $this->invokeAgent($messages, $geminiModel);
     }
 
-    public function invokeAgentWithUserAudioMessage(string $audioFile, ?string $additionalTextMessage = null): string
+    public function invokeAgentWithUserAudioMessage(
+        string $audioFile,
+        string $geminiModel,
+        ?string $additionalTextMessage = null
+    ): string
     {
         $messages = new MessageBag(
             Message::forSystem(self::SYSTEM_MESSAGE . self::ADDITIONAL_SYSTEM_MESSAGE_AUDIO_INPUT),
@@ -50,12 +57,12 @@ class AgentInvokerService
             $messages->add(Message::ofUser($additionalTextMessage));
         }
 
-        return $this->invokeAgent($messages);
+        return $this->invokeAgent($messages, $geminiModel);
     }
 
-    private function invokeAgent(MessageBag $messages): string
+    private function invokeAgent(MessageBag $messages, string $geminiModel): string
     {
-        $result = $this->agentProviderService->getAgent()->call($messages);
+        $result = $this->agentProviderService->getAgent($geminiModel)->call($messages);
         $resultContent = $result->getContent();
 
         if (!is_string($resultContent)) {
