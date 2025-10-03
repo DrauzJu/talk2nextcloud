@@ -20,7 +20,7 @@
         "@biomejs/biome": "^2.2.4",
         "@mdi/font": "^7.4.47",
         "@vitejs/plugin-vue": "^6.0.1",
-        "@vue/tsconfig": "^0.7.0",
+        "@vue/tsconfig": "^0.8.1",
         "typescript": "^5.9.2",
         "vite": "7.1.5",
         "vite-plugin-symfony": "^8.2.0",
