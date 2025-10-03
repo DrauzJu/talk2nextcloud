@@ -1,18 +1,16 @@
 <template>
-    <v-container class="fill-height" fluid>
-        <v-row class="fill-height" justify="center" align-content="center">
-            <v-col cols="12" md="8" class="text-center">
+    <v-container fluid max-height="100vh">
+        <v-row class="fill-height" align-content="center">
+            <v-col cols="12" class="text-center d-flex flex-column align-center">
                 <v-icon size="x-large" color="primary">mdi-cloud-question</v-icon>
                 <h1 class="mb-4">Talk2Nextcloud</h1>
-                <div class="d-flex justify-center">
-                    <v-select
-                        v-model="selectedModel"
-                        label="Gemini model"
-                        :items="['gemini-2.5-pro', 'gemini-2.5-flash']"
-                        class="modelSelect"
-                    ></v-select>
-                </div>
-                <v-card theme="dark">
+                <v-select
+                    v-model="selectedModel"
+                    label="Gemini model"
+                    :items="['gemini-2.5-pro', 'gemini-2.5-flash']"
+                    class="modelSelect"
+                ></v-select>
+                <v-card theme="dark" class="main-card">
                     <v-tabs
                         v-model="openTab"
                         :items="tabs"
@@ -29,25 +27,59 @@
                     </v-tabs>
                     <v-tabs-window v-model="openTab">
                         <v-tabs-window-item value="voice" class="pa-4 text-center">
-                            <v-btn
-                                :color="recordingSession ? 'red' : 'primary'"
-                                @click="toggleRecording"
-                                :disabled="loading"
-                                icon
-                                size="x-large"
-                                class="mb-4 mr-2"
+                            <v-tooltip
+                                :text="recordingSession ? 'Stop Recording' : 'Start Recording'"
+                                location="bottom"
                             >
-                                <v-icon size="x-large">mdi-microphone</v-icon>
-                            </v-btn>
-                            <v-btn
-                                @click="resendLastRecording"
+                                <template v-slot:activator="{ props }">
+                                    <v-btn
+                                        v-bind="props"
+                                        :color="recordingSession ? 'red' : 'primary'"
+                                        @click="toggleRecording"
+                                        :disabled="loading"
+                                        icon
+                                        size="x-large"
+                                        class="mb-4 mr-2"
+                                    >
+                                        <v-icon size="x-large">mdi-microphone</v-icon>
+                                    </v-btn>
+                                </template>
+                            </v-tooltip>
+                            <v-tooltip
+                                text="Resend last recording"
                                 :disabled="lastAudioBlob === null || loading"
-                                icon
-                                size="x-large"
-                                class="mb-4 ml-2"
+                                location="bottom"
                             >
-                                <v-icon size="x-large">mdi-replay</v-icon>
-                            </v-btn>
+                                <template v-slot:activator="{ props }">
+                                    <v-btn
+                                        v-bind="props"
+                                        @click="resendLastRecording"
+                                        :disabled="lastAudioBlob === null || loading"
+                                        icon
+                                        size="x-large"
+                                        class="mb-4 ml-2 mr-2"
+                                    >
+                                        <v-icon size="x-large">mdi-replay</v-icon>
+                                    </v-btn>
+                                </template>
+                            </v-tooltip>
+                            <v-tooltip
+                                text="Play last recording"
+                                location="bottom"
+                            >
+                                <template v-slot:activator="{ props }">
+                                    <v-btn
+                                        v-bind="props"
+                                        @click="playLastRecording"
+                                        :disabled="lastAudioBlob === null"
+                                        icon
+                                        size="x-large"
+                                        class="mb-4 ml-2"
+                                    >
+                                        <v-icon size="x-large">mdi-play</v-icon>
+                                    </v-btn>
+                                </template>
+                            </v-tooltip>
                             <div v-if="recordingSession" class="text-red">Recording...</div>
                         </v-tabs-window-item>
 
@@ -73,17 +105,11 @@
                     </v-tabs-window>
                 </v-card>
 
-                <v-card v-if="loading || llmResponse" class="mt-4" theme="dark" :class="requestStatusClass">
-                    <v-card-title>Response</v-card-title>
-                    <v-card-text>
-                        <div v-if="loading" class="text-center">
-                            <v-progress-circular indeterminate color="primary"></v-progress-circular>
-                        </div>
-                        <div v-else>
-                            <iframe :srcdoc="llmResponse" sandbox class="llmResponseIFrame"></iframe>
-                        </div>
-                    </v-card-text>
-                </v-card>
+                <LlmResponse
+                    :llm-response="llmResponse"
+                    :loading="loading"
+                    :request-status="requestStatus"
+                />
             </v-col>
         </v-row>
     </v-container>
@@ -91,9 +117,9 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { RequestStatus } from '../helper/types';
 import { ApiClient } from '../services/api-client';
-
-type RequestStatus = 'success' | 'error' | '';
+import LlmResponse from './LlmResponse.vue';
 
 const selectedModel = ref('gemini-2.5-flash');
 
@@ -106,7 +132,7 @@ const openTab = ref('voice');
 const loading = ref(false);
 const llmResponse = ref('');
 const textPrompt = ref('');
-const requestStatusClass = ref<RequestStatus>('');
+const requestStatus = ref<RequestStatus>(null);
 
 const recordingSession = ref<{
     mediaRecorder: MediaRecorder;
@@ -147,7 +173,6 @@ async function startRecording() {
 
         mediaRecorder.onstop = () => {
             resolve(new Blob(audioChunks, { type: AUDIO_MIME_TYPE }));
-            // stream.getTracks().forEach(track => track.stop());
         };
 
         mediaRecorder.start();
@@ -156,7 +181,7 @@ async function startRecording() {
 
         llmResponse.value =
             'Error: Could not start recording. Please check microphone permissions.';
-        requestStatusClass.value = 'error';
+        requestStatus.value = 'error';
         recordingSession.value = null;
     }
 }
@@ -167,7 +192,7 @@ async function stopRecording() {
     }
 
     loading.value = true;
-    requestStatusClass.value = '';
+    requestStatus.value = null;
     const { mediaRecorder, blobPromise } = recordingSession.value;
 
     mediaRecorder.stop();
@@ -184,7 +209,7 @@ async function stopRecording() {
         }
 
         llmResponse.value = `Error: ${error.message}`;
-        requestStatusClass.value = 'error';
+        requestStatus.value = 'error';
     } finally {
         loading.value = false;
     }
@@ -193,13 +218,13 @@ async function stopRecording() {
 async function resendLastRecording() {
     if (lastAudioBlob.value === null) {
         llmResponse.value = 'No previous recording to resend.';
-        requestStatusClass.value = 'error';
+        requestStatus.value = 'error';
 
         return;
     }
 
     loading.value = true;
-    requestStatusClass.value = '';
+    requestStatus.value = null;
 
     try {
         await sendRecording(lastAudioBlob.value);
@@ -209,10 +234,20 @@ async function resendLastRecording() {
         }
 
         llmResponse.value = `Error: ${error.message}`;
-        requestStatusClass.value = 'error';
+        requestStatus.value = 'error';
     } finally {
         loading.value = false;
     }
+}
+
+async function playLastRecording() {
+    if (lastAudioBlob.value === null) {
+        return;
+    }
+
+    const audioUrl = URL.createObjectURL(lastAudioBlob.value);
+    const audio = new Audio(audioUrl);
+    await audio.play();
 }
 
 const apiClient = new ApiClient();
@@ -230,11 +265,11 @@ async function sendRecording(blob: Blob) {
 
         const jsonResponse = await response.json();
         llmResponse.value = jsonResponse.response ?? 'No response received';
-        requestStatusClass.value = 'success';
+        requestStatus.value = 'success';
     } catch (error) {
         console.error('Error sending recording:', error);
         llmResponse.value = 'Error: Could not send recording to server.';
-        requestStatusClass.value = 'error';
+        requestStatus.value = 'error';
     }
 }
 
@@ -245,7 +280,7 @@ async function sendTextPrompt() {
 
     loading.value = true;
     llmResponse.value = '';
-    requestStatusClass.value = '';
+    requestStatus.value = null;
 
     try {
         const response = await apiClient.fetch('/api/llm/text-prompt', {
@@ -261,11 +296,11 @@ async function sendTextPrompt() {
 
         const jsonResponse = await response.json();
         llmResponse.value = jsonResponse.response ?? 'No response received';
-        requestStatusClass.value = 'success';
+        requestStatus.value = 'success';
     } catch (error) {
         console.error('Error sending text prompt:', error);
         llmResponse.value = 'Error: Could not send prompt to server.';
-        requestStatusClass.value = 'error';
+        requestStatus.value = 'error';
     } finally {
         loading.value = false;
     }
@@ -273,25 +308,15 @@ async function sendTextPrompt() {
 </script>
 
 <style scoped>
+.main-card {
+    min-width: 500px;
+}
+
 .fill-height {
     min-height: 100vh;
 }
 
 .modelSelect {
     max-width: 400px;
-}
-
-.llmResponseIFrame {
-    width: 100%;
-    border: none;
-    height: 500px;
-}
-
-.success {
-    border: 4px solid #4CAF50;
-}
-
-.error {
-    border: 4px solid #F44336;
 }
 </style>
