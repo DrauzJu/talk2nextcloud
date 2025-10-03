@@ -22,7 +22,7 @@
         "@vue/tsconfig": "^0.7.0",
         "typescript": "^5.9.2",
         "vite": "7.1.5",
-        "vite-plugin-symfony": "^8.2.0",
+        "vite-plugin-symfony": "^8.2.2",
         "vue-tsc": "^3.0.5"
     }
 }
