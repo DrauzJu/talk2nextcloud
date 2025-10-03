@@ -39,9 +39,9 @@ Generate JWT tokens using `bin/console lexik:jwt:generate-keypair`.
 
 ## Build docker image
 
-````shell
+```shell
 docker build -f ./docker/Dockerfile .
 ```
 
-To run it, you need to mount a volume for the jwt keys (or set JWT_SECRET_KEY and JWT_PUBLIC_KEY)
+To run it, you need to mount a volume for the jwt keys in `/srv/app/config/jwt`
 and set the environment variables mentioned above.

@@ -28,6 +28,7 @@ ARG GROUP=www-data
 
 WORKDIR /srv/app
 RUN mkdir /srv/app/var && chown -R ${USER}:${GROUP} /srv/app /config/caddy /data/caddy
+RUN mkdir -p /srv/app/config/jwt && chown -R ${USER}:${GROUP} /srv/app/config/jwt
 
 USER ${USER}
 
