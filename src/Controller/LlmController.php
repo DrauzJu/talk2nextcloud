@@ -28,13 +28,17 @@ final class LlmController extends AbstractController
     {
         $data = json_decode($request->getContent(), true, flags: JSON_THROW_ON_ERROR);
         $userMessage = $data['prompt'] ?? null;
+        $geminiModel = $data['geminiModel'] ?? 'gemini-2.5-flash';
 
         if ($userMessage === null) {
             throw new InvalidArgumentException('Prompt is required');
         }
 
         try {
-            $agentResponse = $this->agentInvokerService->invokeAgentWithUserTextMessage($userMessage);
+            $agentResponse = $this->agentInvokerService->invokeAgentWithUserTextMessage(
+                $userMessage,
+                $geminiModel,
+            );
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 
@@ -49,6 +53,8 @@ final class LlmController extends AbstractController
     #[Route('/api/llm/audio-prompt', methods: ['POST'])]
     public function audioPrompt(Request $request): Response
     {
+        $geminiModel = $request->get('geminiModel', 'gemini-2.5-flash');
+
         /** @var UploadedFile $audioFile */
         $audioFile = $request->files->get('audio');
         if (!$audioFile) {
@@ -63,7 +69,10 @@ final class LlmController extends AbstractController
         try {
             $this->audioConverterService->convertAudioFileToWAV($audioFile->getRealPath(), $convertedFilePath);
 
-            $agentResponse = $this->agentInvokerService->invokeAgentWithUserAudioMessage($convertedFilePath);
+            $agentResponse = $this->agentInvokerService->invokeAgentWithUserAudioMessage(
+                $convertedFilePath,
+                $geminiModel,
+            );
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
 

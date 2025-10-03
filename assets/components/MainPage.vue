@@ -4,6 +4,14 @@
             <v-col cols="12" md="8" class="text-center">
                 <v-icon size="x-large" color="primary">mdi-cloud-question</v-icon>
                 <h1 class="mb-4">Talk2Nextcloud</h1>
+                <div class="d-flex justify-center">
+                    <v-select
+                        v-model="selectedModel"
+                        label="Gemini model"
+                        :items="['gemini-2.5-pro', 'gemini-2.5-flash']"
+                        class="modelSelect"
+                    ></v-select>
+                </div>
                 <v-card theme="dark">
                     <v-tabs
                         v-model="openTab"
@@ -86,6 +94,8 @@ import { ref } from 'vue';
 import { ApiClient } from '../services/api-client';
 
 type RequestStatus = 'success' | 'error' | '';
+
+const selectedModel = ref('gemini-2.5-flash');
 
 const tabs = ref([
     { id: 'voice', text: 'Voice', icon: 'mdi-microphone' },
@@ -210,6 +220,7 @@ const apiClient = new ApiClient();
 async function sendRecording(blob: Blob) {
     const formData = new FormData();
     formData.append('audio', blob, 'recording.webm');
+    formData.append('geminiModel', selectedModel.value);
 
     try {
         const response = await apiClient.fetch('/api/llm/audio-prompt', {
@@ -242,7 +253,10 @@ async function sendTextPrompt() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ prompt: textPrompt.value }),
+            body: JSON.stringify({
+                prompt: textPrompt.value,
+                geminiModel: selectedModel.value,
+            }),
         });
 
         const jsonResponse = await response.json();
@@ -263,10 +277,14 @@ async function sendTextPrompt() {
     min-height: 100vh;
 }
 
+.modelSelect {
+    max-width: 400px;
+}
+
 .llmResponseIFrame {
     width: 100%;
     border: none;
-    height: 400px;
+    height: 500px;
 }
 
 .success {
