@@ -6,8 +6,9 @@
         "build": "vite build",
         "lint": "biome lint ./assets",
         "lint:fix": "biome lint --write ./assets",
-        "format": "biome format --write ./assets",
-        "check": "biome check ./assets"
+        "format:fix": "biome format --write ./assets",
+        "check": "biome check ./assets",
+        "check:fix": "biome check --write ./assets"
     },
     "dependencies": {
         "pinia": "^3.0.3",
