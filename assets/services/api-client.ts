@@ -2,7 +2,7 @@ import { getJwtTokenExpirationDate } from '../helper/jwt';
 
 export class ApiClient {
     public async fetch(path: string, options?: RequestInit): Promise<Response> {
-        let storedToken = localStorage.getItem('authToken');
+        const storedToken = localStorage.getItem('authToken');
         let token: string;
 
         if (storedToken === null) {
