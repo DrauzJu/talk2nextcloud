@@ -6,7 +6,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\AI\Agent\Agent;
 use Symfony\AI\Agent\Toolbox\AgentProcessor;
 use Symfony\AI\Agent\Toolbox\Toolbox;
-use Symfony\AI\Platform\Bridge\Gemini\Gemini;
+use Symfony\AI\Agent\Toolbox\FaultTolerantToolbox;
 use Symfony\AI\Platform\Bridge\Gemini\PlatformFactory;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\DependencyInjection\Attribute\AutowireIterator;
@@ -26,7 +26,9 @@ class AgentProviderService
     {
         $platform = PlatformFactory::create($this->geminiApiKey, HttpClient::create());
         $toolbox = new Toolbox($this->agentTools, logger: $this->logger);
-        $agentProcessor = new AgentProcessor($toolbox);
+        $agentProcessor = new AgentProcessor(
+            new FaultTolerantToolbox($toolbox),
+        );
 
         return new Agent(
             platform: $platform,
