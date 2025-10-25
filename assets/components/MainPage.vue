@@ -6,10 +6,21 @@
                 <h1 class="mb-4">Talk2Nextcloud</h1>
                 <v-select
                     v-model="selectedModel"
-                    label="Gemini model"
-                    :items="['gemini-2.5-pro', 'gemini-2.5-flash']"
+                    label="Model"
+                    :items="availableModels"
+                    :loading="modelsLoading"
+                    :disabled="availableModels.length === 0"
+                    item-title="title"
+                    item-value="value"
                     class="modelSelect"
-                ></v-select>
+                >
+                    <template v-slot:item="{ props, item }">
+                        <v-list-subheader v-if="item.raw.header" :key="item.raw.title">
+                            {{ item.raw.title }}
+                        </v-list-subheader>
+                        <v-list-item v-else v-bind="props"></v-list-item>
+                    </template>
+                </v-select>
                 <v-card theme="dark" class="main-card">
                     <v-tabs
                         v-model="openTab"
@@ -116,12 +127,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { RequestStatus } from '../helper/types';
 import { ApiClient } from '../services/api-client';
 import LlmResponse from './LlmResponse.vue';
 
-const selectedModel = ref('gemini-2.5-flash');
+interface ModelItem {
+    title: string;
+    value: string;
+    header?: boolean;
+}
+
+interface ModelsResponse {
+    models: {
+        [provider: string]: {
+            provider: string;
+            models: string[];
+        };
+    };
+    defaultModel: string | null;
+}
+
+const selectedModel = ref<string>('');
+const availableModels = ref<ModelItem[]>([]);
+const modelsLoading = ref(true);
 
 const tabs = ref([
     { id: 'voice', text: 'Voice', icon: 'mdi-microphone' },
@@ -252,10 +281,54 @@ async function playLastRecording() {
 
 const apiClient = new ApiClient();
 
+async function fetchAvailableModels() {
+    modelsLoading.value = true;
+    try {
+        const response = await apiClient.fetch('/api/llm/models');
+        const data: ModelsResponse = await response.json();
+
+        // Build a grouped list of models with non-selectable headers
+        const modelsList: ModelItem[] = [];
+
+        for (const [, providerData] of Object.entries(data.models)) {
+            // Add a non-selectable header for this provider
+            modelsList.push({
+                title: providerData.provider,
+                value: '',
+                header: true,
+            });
+            // Add all models from this provider as selectable items
+            for (const modelName of providerData.models) {
+                modelsList.push({
+                    title: modelName,
+                    value: modelName,
+                });
+            }
+        }
+
+        availableModels.value = modelsList;
+
+        // Set default model
+        if (data.defaultModel) {
+            selectedModel.value = data.defaultModel;
+        }
+    } catch (error) {
+        console.error('Error fetching available models:', error);
+        llmResponse.value = 'Error: Could not load available models. Please check your API key configuration.';
+        requestStatus.value = 'error';
+    } finally {
+        modelsLoading.value = false;
+    }
+}
+
+onMounted(() => {
+    fetchAvailableModels();
+});
+
 async function sendRecording(blob: Blob) {
     const formData = new FormData();
     formData.append('audio', blob, 'recording.webm');
-    formData.append('geminiModel', selectedModel.value);
+    formData.append('model', selectedModel.value);
 
     try {
         const response = await apiClient.fetch('/api/llm/audio-prompt', {
@@ -290,7 +363,7 @@ async function sendTextPrompt() {
             },
             body: JSON.stringify({
                 prompt: textPrompt.value,
-                geminiModel: selectedModel.value,
+                model: selectedModel.value,
             }),
         });
 

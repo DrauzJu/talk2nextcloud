@@ -26,7 +26,9 @@ NEXTCLOUD_URL=https://tbd.com
 NEXTCLOUD_USER=tbd
 NEXTCLOUD_PASSWORD=tbd
 
+# Configure API keys for LLM providers (leave empty to disable a provider)
 GEMINI_API_KEY=tbd
+OPENAI_API_KEY=tbd
 ````
 
 Generate JWT tokens using `bin/console lexik:jwt:generate-keypair`.
@@ -35,7 +37,8 @@ Generate JWT tokens using `bin/console lexik:jwt:generate-keypair`.
 
 - Nextcloud Notes
   - `nextcloud-list-notes`
-  - `nextcloud-read-note` (requires note ID)
+  - `nextcloud-read-note`
+  - `nextcloud-append-to-note`
 
 ## Build docker image
 

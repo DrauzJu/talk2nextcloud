@@ -4,6 +4,7 @@ namespace Talk2Nextcloud\Controller;
 
 use Talk2Nextcloud\Services\Agent\AgentInvokerService;
 use Talk2Nextcloud\Services\AudioConverterService;
+use Talk2Nextcloud\Services\ModelCatalogService;
 use InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,25 +20,42 @@ final class LlmController extends AbstractController
     public function __construct(
         private readonly AgentInvokerService $agentInvokerService,
         private readonly AudioConverterService $audioConverterService,
+        private readonly ModelCatalogService $modelCatalogService,
         private readonly LoggerInterface $logger,
     )
     {}
+
+    #[Route('/api/llm/models', methods: ['GET'])]
+    public function getModels(): JsonResponse
+    {
+        $models = $this->modelCatalogService->getAvailableModels();
+        $defaultModel = $this->modelCatalogService->getDefaultModel();
+
+        return new JsonResponse([
+            'models' => $models,
+            'defaultModel' => $defaultModel,
+        ]);
+    }
 
     #[Route('/api/llm/text-prompt', methods: ['POST'])]
     public function textPrompt(Request $request): Response
     {
         $data = json_decode($request->getContent(), true, flags: JSON_THROW_ON_ERROR);
         $userMessage = $data['prompt'] ?? null;
-        $geminiModel = $data['geminiModel'] ?? 'gemini-2.5-flash';
+        $model = $data['model'] ?? $this->modelCatalogService->getDefaultModel();
 
         if ($userMessage === null) {
             throw new InvalidArgumentException('Prompt is required');
         }
 
+        if ($model === null) {
+            return new Response('No LLM provider is configured. Please set at least one API key (GEMINI_API_KEY or OPENAI_API_KEY) in your .env.local file.', Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+
         try {
             $agentResponse = $this->agentInvokerService->invokeAgentWithUserTextMessage(
                 $userMessage,
-                $geminiModel,
+                $model,
             );
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
@@ -53,7 +71,11 @@ final class LlmController extends AbstractController
     #[Route('/api/llm/audio-prompt', methods: ['POST'])]
     public function audioPrompt(Request $request): Response
     {
-        $geminiModel = $request->get('geminiModel', 'gemini-2.5-flash');
+        $model = $request->get('model') ?? $this->modelCatalogService->getDefaultModel();
+
+        if ($model === null) {
+            return new Response('No LLM provider is configured. Please set at least one API key (GEMINI_API_KEY or OPENAI_API_KEY) in your .env.local file.', Response::HTTP_SERVICE_UNAVAILABLE);
+        }
 
         /** @var UploadedFile $audioFile */
         $audioFile = $request->files->get('audio');
@@ -71,7 +93,7 @@ final class LlmController extends AbstractController
 
             $agentResponse = $this->agentInvokerService->invokeAgentWithUserAudioMessage(
                 $convertedFilePath,
-                $geminiModel,
+                $model,
             );
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
