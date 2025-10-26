@@ -50,9 +50,17 @@ class AgentInvokerService
         ?string $additionalTextMessage = null
     ): string
     {
+        // Create Audio with explicit format to avoid MIME type issues.
+        $audio = new Audio(
+            fn(): string => file_get_contents($audioFile),
+            // PHP's mime_content_type() returns 'audio/x-wav' but some models expect 'wav'
+            'audio/wav',
+            $audioFile
+        );
+
         $messages = new MessageBag(
             Message::forSystem(self::SYSTEM_MESSAGE . self::ADDITIONAL_SYSTEM_MESSAGE_AUDIO_INPUT),
-            Message::ofUser(Audio::fromFile($audioFile)),
+            Message::ofUser($audio),
         );
 
         if ($additionalTextMessage !== null) {
