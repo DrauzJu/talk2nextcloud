@@ -7,7 +7,7 @@ COPY . /srv/app/
 
 RUN npm clean-install && npm run build
 
-FROM dunglas/frankenphp@sha256:d656fa836a1f1e4b75a7838d817276e7c45b20c6714f6af336a6c7eb1638531b
+FROM dunglas/frankenphp@sha256:54e744951308624f660908516a3cbe92780238d666c711dcee2561bb38fec9af
 
 RUN apt update && apt install -y ffmpeg unzip
 RUN install-php-extensions zip opcache intl
