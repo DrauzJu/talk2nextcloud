@@ -1,6 +1,6 @@
 FROM composer@sha256:adca13b22c7b77f7fc606353453be12ba93e0917c332b8b0fa5efe3a85bf27ab as composer-tool
 
-FROM node:22@sha256:4fe6aeab97abe061bf953dc4589b7d3233bc8033031398b6f30036e8fe0d4e38 as build-client
+FROM node:25@sha256:92a8086f817cfaf95bfca41d2f72382ae64e87389fe865f9b2f06335edb34073 as build-client
 
 WORKDIR /srv/app
 COPY . /srv/app/
